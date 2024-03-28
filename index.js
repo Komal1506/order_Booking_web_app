@@ -9,7 +9,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/views"));
 app.set("view engine", "ejs");
 
-// const con = require("./aaaa_con");
+
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/Main.html");
@@ -95,7 +95,7 @@ app.post("/", (req, res) => {
           console.log(error);
         }
 
-        // res.end("Registered Successfully  ");
+        
         res.redirect("/items");
       }
     );
@@ -103,22 +103,7 @@ app.post("/", (req, res) => {
 });
 // ...
 
-// app.get("/items", (req, res) => {
-//   con.connect((error) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       var sq = "select * from item";
-//       con.query(sq, (error, resp) => {
-//         con.release;
-//         if (error) {
-//           console.log(error);
-//         }
-//         res.render("items", { items: resp });
-//       });
-//     }
-//   });
-// });
+
 
 // Define a route to handle the search request
 app.get("/search", (req, res) => {
@@ -134,8 +119,7 @@ app.get("/search", (req, res) => {
       return;
     }
     res.render("read_item.ejs", { result });
-    // Send the search results as JSON response
-    //res.json(result);
+ 
   });
 });
 
@@ -147,9 +131,7 @@ app.get("/land_page", (req, res) => {
   res.sendFile(__dirname + "/LandPage.html");
 });
 
-// app.get("/login_pg", (req, res) => {
-//   res.sendFile(__dirname + "/login.html");
-// });
+
 
 app.get("/backtomain", (req, res) => {
   res.sendFile(__dirname + "/Main.html");
@@ -160,30 +142,12 @@ app.get("/delete_item", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      // results = JSON.parse(JSON.stringify(eachrow[0]));
-      // console.log(results);
-      // res.render("edit.ejs", { results });
+    
       res.end("record deleted successfully");
     }
   });
 });
-// app.get("/search_p", (req, res) => {
-//   // Get the search value from the query parameters
-//   const searchp = req.query.searchValue;
-//   // Construct the SQL query to search for the item in the database
-//   const sql = `SELECT * FROM item WHERE item_code ='${searchp}'`;
-//   // Execute the SQL query
-//   con.query(sql, (err, result) => {
-//     if (err) {
-//       console.error("Error executing SQL query:", err);
-//       res.status(500).json({ error: "Internal server error" });
-//       return;
-//     }
-//     res.render("update_p.ejs", { result });
-//     // Send the search results as JSON response
-//     //res.json(result);
-//   });
-// });
+
 
 //code for updating individual item
 app.get("/update-data", (req, res) => {
@@ -194,12 +158,10 @@ app.get("/update-data", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        // results = JSON.parse(JSON.stringify(eachrow[0]));
+       
         console.log("hiiiii");
         res.render(__dirname + "/update-data", { item: eachrow });
-        // res.sendFile(__dirname+"/update-data");
-        // res.end("updated successfully");
-        // res.render("edit.ejs", { results });
+        
       }
     }
   );
@@ -281,36 +243,12 @@ app.post("/update-data", (req, res) => {
     (error, result) => {
       if (error) console.log(error);
       else {
-        // else{
-
-        //   notifier.notify({
-        //     title: 'Success',
-        //     message: 'Data updated successfully!',
-
-        // });
-        // res.end(" update successfully");
-        // alert("data updated");
-        // res.json({ message: "Data updated successfully" });
-
         res.sendFile(__dirname + "/Main.html");
-        // res.redirect("/search");
-        // res.render("read_item.ejs", { result });
+        
       }
     }
   );
 });
 
-app.post("/groups", (req, res) => {
-  const { groupName, groupCode } = req.body;
-  const sql = "INSERT INTO groups (groupName, groupCode) VALUES (?, ?)";
-  connection.query(sql, [groupName, groupCode], (err, result) => {
-    if (err) {
-      console.error("Error adding group: ", err);
-      res.status(500).send("Error adding group");
-      return;
-    }
-    console.log("Group added successfully");
-    res.status(200).send("Group added successfully");
-  });
-});
+
 app.listen(5000);
