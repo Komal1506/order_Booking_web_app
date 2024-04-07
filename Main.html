@@ -124,6 +124,63 @@
             class="mt-1 p-2 w-full border border-black rounded-md bg-gray-100"
           />
         </div>
+        <div class="form-inline flex items-center mr-6">
+          <div
+            class="col-sm-6 form-inline col-sm-10 flex items-center"
+            style="margin-left: 40px"
+            
+           
+          >
+            <label class="mr-2" style="margin-top: 10px">Group:</label>
+            <button
+              type="button"
+              data-toggle="modal"
+              data-target="#modal"
+              data-info="Group"
+              id="openModalButton"
+              onclick="openPopup()"
+              style="margin-top: 10px"
+              class="w-1/8 bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue"
+            >
+              Add
+            </button>
+            <select
+              id="groupDropdown"
+              class="form-control form-select-sm w-38"
+              style="margin-top: 10px"
+              class="w-1/2 bg-blue-500 text-black py-1 px-3 rounded-md hover:bg-white focus:shadow-outline-blue focus:shadow-outline-blue"
+            >
+              <option value="from db">select</option>
+            </select>
+          </div>
+          <!-- Button trigger modal for sub group -->
+          <div
+            class="col-sm-6 form-inline col-sm-6 flex items-center"
+            style="margin-left: 400px"
+          >
+            <label class="mr-2" style="margin-top: 10px">Sub_Group:</label>
+            <button
+              type="button"
+              data-toggle="modal"
+              data-target="#modal"
+              data-info="Group"
+              id="openModalButton"
+              onclick="SubopenPopup()"
+              style="margin-top: 10px"
+              class="w-1/8 bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue"
+            >
+              Add
+            </button>
+            <select
+              id="subgroupDropdown"
+              class="form-control form-select-sm w-38"
+              style="margin-top: 10px"
+              class="w-1/8 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue"
+            >
+              <option value="from db">select</option>
+            </select>
+          </div>
+        </div>
         <h2>Departments</h2>
         <div class="container mb-4 w-screen flex shadow-md">
           <div class="w-full">
@@ -470,17 +527,147 @@
             <button id="searchButton" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">Search</button>
         </div>
     </div>
-         
+    <div
+        id="popupForm"
+        class="fixed inset-0 z-50 flex justify-center items-center bg-gray-800 bg-opacity-50 hidden"
+      >
+        <div class="bg-white p-8 rounded shadow-md w-96">
+          <h1 class="text-2xl font-bold mb-6">Add Group Master</h1>
+          <form action="http://localhost:5000/add-group" method="post">
+            <label for="groupName">Group Name:</label>
+            <input
+              type="text"
+              id="groupName"
+              name="groupName"
+              class="w-full px-4 py-2 border rounded-md mb-4"
+              required
+            />
+            <label for="groupCode">Group Code:</label>
+            <input
+              type="text"
+              id="groupCode"
+              name="groupCode"
+              class="w-full px-4 py-2 border rounded-md mb-4"
+              required
+            />
+            <button
+              type="submit"
+              onclick="closePopup(); savegrpdata(1)"
+              class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue"
+            >
+              Submit
+            </button>
+          </form>
+          <button
+            onclick="closePopup()"
+            class="mt-4 w-full bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:shadow-outline-gray"
+          >
+            Close
+          </button>
+        </div>
+      </div>
 
+        <!--Modal for subgroup-->
+    <div
+    id="SubgpopupForm"
+    class="fixed inset-0 z-50 flex justify-center items-center bg-gray-800 bg-opacity-50 hidden"
+  >
+    <div class="bg-white p-8 rounded shadow-md w-96">
+      <h1 class="text-2xl font-bold mb-6">Add Sub_Group Master</h1>
+      <form action="http://localhost:5000/add-subgroup" method="post">
+        <label for="subgroupName">Sub_Group Name:</label>
+        <input
+          type="text"
+          id="subgroupName"
+          name="subgroupName"
+          class="w-full px-4 py-2 border rounded-md mb-4"
+          required
+        />
+        <label for="subgroupCode">Sub_Group Code:</label>
+        <input
+          type="text"
+          id="subgroupCode"
+          name="subgroupCode"
+          class="w-full px-4 py-2 border rounded-md mb-4"
+          required
+        />
+        <button
+          type="submit"
+          onclick="SubclosePopup(); savegrpdata(2)"
+          class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue"
+        >
+          Submit
+        </button>
+      </form>
+      <button
+        onclick="SubclosePopup()"
+        class="mt-4 w-full bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:shadow-outline-gray"
+      >
+        Close
+      </button>
+    </div>
+  </div>     
 
+    
     <script>
-      document
-        .getElementById("searchButton")
-        .addEventListener("click", function () {
-          const searchTerm = document.getElementById('searchItemCode').value;
-          window.location.href = '/search?searchValue=' + encodeURIComponent(searchTerm)
+     
+      function openPopup() {
+        console.log("Button pressed");
+        document.getElementById("popupForm").classList.remove("hidden");
+      }
+
+   
+      function closePopup() {
+        document.getElementById("popupForm").classList.add("hidden");
+      }
+    </script>
+
+  
+    <script>
+      
+      function SubopenPopup() {
+        document.getElementById("SubgpopupForm").classList.remove("hidden");
+      }
+
+     
+      function SubclosePopup() {
+        document.getElementById("SubgpopupForm").classList.add("hidden");
+      }
+    </script>
+
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+     
+        $(document).ready(function() {
+            $("#groupDropdown").click(function() { 
+                $.get("/existing-groups", function(data) {
+                    
+                    $("#groupDropdown").empty();
+                    
+                    data.existingGroupNames.forEach(function(groupName) {
+                        $("#groupDropdown").append($("<option>").text(groupName));
+                    });
+                });
+            });
         });
     </script>
+
+<script>
+ 
+    $(document).ready(function() {
+        $("#subgroupDropdown").click(function() { 
+            $.get("/existing-subgroups", function(data) {
+               
+                $("#subgroupDropdown").empty();
+                
+                data.existingsubgroupnames.forEach(function(Subgroupname) {
+                    $("#subgroupDropdown").append($("<option>").text(Subgroupname));
+                });
+            });
+        });
+    });
+</script>
 
     <script>
       const menu = document.getElementById("menu");
@@ -494,8 +681,15 @@
         submenu.classList.add("hidden");
       });
     </script>
+    <script>
+      document
+        .getElementById("searchButton")
+        .addEventListener("click", function () {
+          const searchTerm = document.getElementById('searchItemCode').value;
+          window.location.href = '/search?searchValue=' + encodeURIComponent(searchTerm)
+        });
+    </script>
 
-    
 
   </body>
   

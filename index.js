@@ -10,6 +10,56 @@ app.use(express.static(__dirname + "/views"));
 app.set("view engine", "ejs");
 
 
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/Main.html");
+});
+let tempGroupData = [];
+let tempSubgroupData = [];
+
+app.post("/add-group", (req, res) => {
+  tempGroupData = [];
+  const { groupName, groupCode } = req.body;
+ 
+  tempGroupData.push({ groupName, groupCode });
+  
+});
+
+
+app.post("/add-subgroup", (req, res) => {
+  tempSubgroupData = [];
+  const { subgroupName, subgroupCode } = req.body;
+  
+  tempSubgroupData.push({ subgroupName, subgroupCode });
+  
+});
+
+app.get("/existing-groups", (req, res) => {
+  const sql = "SELECT DISTINCT GroupName FROM preitemmaster";
+  con.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching group names: ", err);
+      res.status(500).json({ error: "Error fetching group names" });
+      return;
+    }
+    const existingGroupNames = result.map((row) => row.GroupName);
+    res.status(200).json({ existingGroupNames });
+  });
+});
+
+// Route to fetch existing subgroup names
+app.get("/existing-subgroups", (req, res) => {
+  const sql = "SELECT DISTINCT Subgroupname FROM item";
+  con.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching group names: ", err);
+      res.status(500).json({ error: "Error fetching subgroup names" });
+      return;
+    }
+    const existingsubgroupnames = result.map((row) => row.Subgroupname);
+    res.status(200).json({ existingsubgroupnames });
+  });
+});
+
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/Main.html");
@@ -53,10 +103,10 @@ app.post("/", (req, res) => {
       console.log(error);
     }
     var sql =
-      "insert into item (item_code,item_name,barcode,hsncode,quantity,deptname,subdeptname,hsngcode,pcase,trading,consu,pacunit,looseunit,convfactor,cratesltr,rate1,rate2,rate3,Tax,taxontax,addtax,sales,purchase,reorder,opstock,maxrate,recorder,loosestock,oprate,opamount) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      "insert into preitemmaster (item_code,item_name,barcode,hsncode,quantity,deptname,subdeptname,hsngcode,pcase,trading,consu,pacunit,looseunit,convfactor,cratesltr,rate1,rate2,rate3,Tax,taxontax,addtax,sales,purchase,reorder,opstock,maxrate,recorder,loosestock,oprate,opamount,GroupName, Groupcode, Subgroupcode, Subgroupname) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     con.query(
       sql,
-      [
+      [   
         icode,
         iname,
         barcode,
@@ -87,6 +137,11 @@ app.post("/", (req, res) => {
         loosestock,
         oprate,
         opamount,
+        ...tempGroupData.map((group) => [group.groupName, group.groupCode]),
+        ...tempSubgroupData.map((subgroup) => [
+          subgroup.subgroupCode,
+          subgroup.subgroupName,
+        ]),
       ],
       (error, resp) => {
         console.log("hello");
@@ -96,7 +151,11 @@ app.post("/", (req, res) => {
         }
 
         
-        res.redirect("/items");
+        notifier.notify({
+          title: 'Insertion Successful',
+          message: 'Data inserted successfully!',
+        });
+        res.sendFile(__dirname + "/Main.html");
       }
     );
   });
@@ -110,7 +169,7 @@ app.get("/search", (req, res) => {
   // Get the search value from the query parameters
   const searchValue = req.query.searchValue;
   // Construct the SQL query to search for the item in the database
-  const sql = `SELECT * FROM item WHERE item_code ='${searchValue}'`;
+  const sql = `SELECT * FROM preitemmaster WHERE item_code ='${searchValue}'`;
   // Execute the SQL query
   con.query(sql, (err, result) => {
     if (err) {
@@ -118,6 +177,10 @@ app.get("/search", (req, res) => {
       res.status(500).json({ error: "Internal server error" });
       return;
     }
+    notifier.notify({
+      title: 'Search Successful',
+      message: 'Data fetched successfully!',
+    });
     res.render("read_item.ejs", { result });
  
   });
@@ -133,12 +196,12 @@ app.get("/land_page", (req, res) => {
 
 
 
-app.get("/backtomain", (req, res) => {
+app.post("/backtomain", (req, res) => {
   res.sendFile(__dirname + "/Main.html");
 });
 
 app.get("/delete_item", (req, res) => {
-  con.query("delete from item where id=?", [req.query.id], (err, eachrow) => {
+  con.query("delete from preitemmaster where id=?", [req.query.id], (err, eachrow) => {
     if (err) {
       console.log(err);
     } else {
@@ -152,7 +215,7 @@ app.get("/delete_item", (req, res) => {
 //code for updating individual item
 app.get("/update-data", (req, res) => {
   con.query(
-    "select * from item where item_code=?",
+    "select * from preitemmaster where item_code=?",
     [req.query.item_code],
     (err, eachrow) => {
       if (err) {
@@ -203,7 +266,7 @@ app.post("/update-data", (req, res) => {
   console.log("connect update  succssfully");
 
   var sql =
-    "update item  set item_code=?,item_name=?,barcode=?,hsncode=?,quantity=?,deptname=?,subdeptname=?,hsngcode=?,pcase=?,trading=?,consu=?,pacunit=?,looseunit=?,convfactor=?,cratesltr=?,rate1=?,rate2=?,rate3=?,Tax=?,taxontax=?,addtax=?,sales=?,purchase=?,reorder=?,opstock=?,maxrate=?,recorder=?,loosestock=?,oprate=?,opamount=? where id=?";
+    "update preitemmaster  set item_code=?,item_name=?,barcode=?,hsncode=?,quantity=?,deptname=?,subdeptname=?,hsngcode=?,pcase=?,trading=?,consu=?,pacunit=?,looseunit=?,convfactor=?,cratesltr=?,rate1=?,rate2=?,rate3=?,Tax=?,taxontax=?,addtax=?,sales=?,purchase=?,reorder=?,opstock=?,maxrate=?,recorder=?,loosestock=?,oprate=?,opamount=? where id=?";
   con.query(
     sql,
     [
@@ -243,7 +306,11 @@ app.post("/update-data", (req, res) => {
     (error, result) => {
       if (error) console.log(error);
       else {
-        res.sendFile(__dirname + "/Main.html");
+        notifier.notify({
+          title: 'updation Successful',
+          message: 'Data updated successfully!',
+        });
+         res.sendFile(__dirname + "/Main.html");
         
       }
     }
